@@ -1,0 +1,95 @@
+//用户界面类
+//功能：用户界面，购买界面
+class UI{
+	friend class List;
+private:
+	int CodeList[MAX];
+	int Num;		//记录总的商品数
+public:
+	UI(int Num,int CodeList[MAX]){
+		this->Num = Num;
+		this->CodeList[MAX] = CodeList[MAX];
+	}
+	UI(){
+		 Num = 0;
+		 CodeList[MAX] = { 0 };
+	}
+	void Menu(){
+		cout << "1、购买" << endl;
+		cout << "2、账单" << endl;
+		cout << "0、退出" << endl;
+		cout << "请选择：";
+	}
+	void Purchase(Shop* s){
+		int code = 0;
+		int number = 0;	//购买单个商品的数量
+		char c;
+		do{
+			cout << "请输入商品号：";
+			cin >> code;
+			cout << "请输入购买数量：";
+			cin >> number;
+			int i = 0;
+			do{
+				if (code == s->good[i].code){
+					for (int j = 1; j <= Num; j++){	//检查是否已经录入过该商品
+						if (code == CodeList[j]){
+							number = number + s->good[i].number;
+							Num--;
+							break;
+						}
+					}
+					s->Changenumber(i,number);		//更改商品的数量
+					Num++;					//增加商品种类数量	
+					CodeList[Num] = code;		//成功找到，记录商品号
+					break;
+				}
+				i++;
+			} while (i<MAX);
+			if (i == MAX){
+				cout << "未找到商品" << endl;
+			}
+			cout << "是否继续？（y/n）";
+			cin >> c;
+		} while (c == 'y');
+	}
+};
+
+//账单类
+//功能：计算总额；打印账单
+class List{
+private:
+	float price[MAX];
+public:
+	List(){
+		price[MAX] = { 0 };
+	}
+	float Count(int n,float p){	//计算小计
+		float count;
+		count = n*p;		//将数量与单价相乘
+		return count;
+	}
+	float CountAll(int Num){	//计算总价
+		float count = 0;
+		for (int n = 0; n < Num; n++){
+			count = count + price[n];		//将每个小计相加
+		}
+		return count;
+	}
+	void print(Shop s,UI u){		//打印账单
+		for (int n = 0; n < u.Num; n++){
+			int i = 0;
+			do{
+				if (u.CodeList[n+1] == s.good[i].code){
+					cout << "名称：" << s.good[i].name;
+					cout << "数量：" << s.good[i].number << s.good[i].unit;
+					cout << "单价：" << s.good[i].price;
+					cout << "小计：" << Count(s.good[i].number, s.good[i].price) << endl;
+					price[n] = Count(s.good[i].number, s.good[i].price);
+				}
+				i++;
+			} while (i < MAX);
+		}
+		cout << "总计：" << CountAll(u.Num) << endl;
+	}
+};
