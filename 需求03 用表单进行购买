@@ -1,0 +1,14 @@
+	void Purchase1(Shop *s){		//当用表单进行购买
+		int code = 1;
+		int number = 0;
+		int *c = s->ReadFile();
+		do{
+			if (c[code] != 0){
+				number = c[code];
+				s->Changenumber(code-1, number);		//更改商品的数量
+				Num++;					//增加商品种类数量	
+				CodeList[Num] = code;		//成功找到，记录商品号
+			}
+			code++;
+		} while (code<MAX);
+	}
