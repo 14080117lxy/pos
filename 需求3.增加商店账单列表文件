@@ -1,0 +1,76 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+using namespace std;
+#define MAX 100
+
+//商店类
+//
+class Shop
+{
+	friend class UI2;
+	friend class List;
+	friend class UI;
+protected:
+	Good good[MAX];                           //定义商店内的商品.
+	int GoodNumber;                                //商品种类
+public:
+	Shop()
+	{
+		ifstream b("商店.txt", ios::in);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b >> GoodNumber;
+		for (int i = 0; i < GoodNumber; i++)
+		{
+			b >> good[i].code;
+			b >> good[i].name;
+			b >> good[i].discount;
+			b >> good[i].price;
+			b >> good[i].unit;
+		}
+	}
+	int* ReadFile()                                                        //读取账单列表，计入一个数组，返回数组名
+	{
+		int numbwe;
+		int a = 0;
+		int *c=new int[100] ;
+		for (int i = 0; i < 100; i++)
+		{
+			c[i] = 0;
+		}
+		ifstream b("账单读取.txt", ios::in);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b >> numbwe;
+	
+		for (int i = 0; i < numbwe; i++)
+		{	
+			b >> a;
+			for (int j = 0; j < GoodNumber; j++)
+			{
+				if (good[j].code == a)
+				{
+					c[j+1]++;
+					break;
+				}
+			}
+			
+			
+		}
+		return c;
+	}
+	void Changenumber(int i, int num)
+	{
+		good[i].number = num;
+	}
+};
+
+		
