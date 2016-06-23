@@ -1,0 +1,94 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+using namespace std;
+#define MAX 100
+
+class UI2                                    //管理员界面
+{
+public:
+	void Menu(Shop *a)                                           //显示管理员菜单
+	{
+
+		int b = 0;
+		do{
+			system("cls");
+			cout << "进入管理员界面。" << endl << endl;
+			cout << "1、更改折扣" << endl;
+			cout << "2、更改优惠" << endl;
+			cout << "0、退出" << endl;
+			cout << "请选择：";
+			cin >> b;
+			if (b == 1){
+				Changediscount(a);
+			}
+			if (b == 2){
+				//ChangeSave();
+			}
+		} while (b != 0);
+	}
+	void Changediscount(Shop* a)                                  //更改商品折扣，需要参数：折扣
+	{
+		int cod = 0;
+		float discount = 0;                                  //商品编号，修改折扣
+		char d = '0';
+		do{
+			system("cls");
+			display(*a);
+			cout << "输入商品编号" << endl;
+			cin >> cod;
+			cout << "以及更改的折扣进行修改" << endl;
+			cin >> discount;
+			if (cod >= a->GoodNumber || discount > 1)
+			{
+				cout << "更改失败，是否继续修改（Y or N）" << endl;
+				cin >> d;
+			}
+			else
+			{
+				a->good[cod - 1].Changediscount(discount);
+				cout << "更改成功，是否继续修改(Y or N)" << endl;
+				cin >> d;
+			}
+		} while (d != 'n'&&d != 'N');
+	}
+	void ChangeSave(Shop *s)		//买二赠一
+	{
+		int n = 0;
+		//float discount = 0;                                  
+		char d = '0';
+		do{
+			system("cls");
+			//display(*a);
+			cout << "输入商品编号" << endl;
+			cin >> n;
+			if (n >= s->GoodNumber)
+			{
+				cout << "更改失败，是否继续修改（Y or N）" << endl;
+				cin >> d;
+			}
+			else
+			{
+				s->good[n - 1].discount = 1;
+				cout << "更改成功，是否继续修改(Y or N)" << endl;
+				cin >> d;
+			}
+		} while (d != 'n'&&d != 'N');
+		;
+	}
+	void display(Shop a)
+	{
+		cout << "编号   名称    单位    单价   折扣" << endl;
+		for (int i = 0; i < a.GoodNumber; i++)
+		{
+			cout << "  " << a.good[i].code;
+			cout << "    " << a.good[i].name;
+			cout << "     " << a.good[i].unit;
+			cout << "     " << a.good[i].price;
+			cout << "      " << a.good[i].discount << endl;
+		}
+	}
+};
+
+
