@@ -1,0 +1,55 @@
+//账单类
+//功能：计算总额；打印账单
+class List{
+private:
+	float price[MAX];
+	float waste[MAX];
+public:
+	List(){
+		price[MAX] = { 0 };
+	}
+	float Count(int n, float p,float d){	//计算小计
+		float count = 0;
+		count = n*p*d;		//将数量与单价相乘,并与折扣相乘
+		return count;
+	}
+	float CountAll(int Num){	//计算总价
+		float count = 0;
+		for (int n = 0; n < Num; n++){
+			count = count + price[n];		//将每个小计相加
+		}
+		return count;
+	}
+	float Waste(int n, float p, float d){	//节省计算
+		float waste = 0;
+		waste = n*p*(1 - d);
+		return waste;
+	}
+	float WasteAll(int Num){		//节省汇总
+		float count = 0;
+		for (int n = 0; n < Num; n++){
+			count = count + waste[n];
+		}
+		return count;
+	}
+	void print(Shop s, UI u){		//打印账单
+		for (int n = 0; n < u.Num; n++){
+			int i = 0;
+			do{
+				if (u.CodeList[n + 1] == s.good[i].code){
+					cout << "***商品购物清单***" << endl;
+					cout << "名称：" << s.good[i].name << "，";
+					cout << "数量：" << s.good[i].number << s.good[i].unit << "，";
+					cout << "单价：" << s.good[i].price << "，";
+					cout << "小计：" << Count(s.good[i].number, s.good[i].price, s.good[i].discount) << endl;
+					cout << "------------------" << endl;
+					price[n] = Count(s.good[i].number, s.good[i].price,s.good[i].discount);
+					waste[n] = Waste(s.good[i].number, s.good[i].price, s.good[i].discount);
+				}
+				i++;
+			} while (i < MAX);
+		}
+		cout << "总计:" << CountAll(u.Num) << endl;
+		cout << "节省:" << WasteAll(u.Num) << endl;
+	}
+};
