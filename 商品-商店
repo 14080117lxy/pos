@@ -1,0 +1,153 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+using namespace std;
+#define MAX 100
+
+
+class Good
+{
+	friend class UI;
+	friend class Shop;
+protected:
+	int code;                                      //商品编号
+	int price;                                    //商品单价
+	float discount = 1;                                //商品折扣
+	string name;                                     //商品名称
+	string unit;                                        //商品单位
+	int number = 1;
+public:
+	Good(int price, string name, string unit, int code)                            //商品初始化，需要参数：商品折扣，名称，价格，编号
+	{
+		this->price = price;
+		this->name = name;
+		this->unit = unit;
+		this->code = code;
+	}
+	Good()
+	{
+		int price = 0;
+		this->name = '0';
+		this->unit = '0';
+		this->code = 0;
+	}
+	void Changediscount(float discount)                                  //更改商品折扣，需要参数：折扣
+	{
+		this->discount = discount;
+	}
+};
+class Shop
+{
+	friend class UI;
+protected:
+	Good good[MAX];                           //定义商店内的商品.
+	int GoodNumber;
+public:
+	Shop()
+	{
+		ifstream b("商店.txt", ios::in);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b >> GoodNumber;
+		cout << GoodNumber << endl;
+		for (int i = 0; i < GoodNumber; i++)
+		{
+			b >> good[i].code;
+			b >> good[i].name;
+			b >> good[i].discount;
+			b >> good[i].price;
+			b >> good[i].unit;
+
+			cout << good[i].code << endl;
+			cout << good[i].name << endl;
+			cout << good[i].discount << endl;
+			cout << good[i].unit << endl;
+		}
+
+	}
+};
+//用户界面类
+//功能：用户界面，购买界面
+class UI{
+	friend class List;
+private:
+	Shop s;
+	int CodeList[MAX];
+	int Num;		//记录总的商品数
+public:
+	void Menu(){
+		cout << "1、购买" << endl;
+		cout << "2、账单" << endl;
+		cout << "0、退出" << endl;
+		cout << "请选择：";
+	}
+	void Purchase(){
+		int code = 0;
+		int number = 0;	//购买单个商品的数量
+		char c;
+		do{
+			cout << "请输入商品号：";
+			cin >> code;
+			cout << "请输入购买数量：";
+			cin >> number;
+			int i = 0;
+			do{
+				cout << s.good[1].code;
+				if (code == s.good[i].code){
+					s.good[i].number = number;
+					Num++;					//商品数量增加
+					CodeList[Num] = code;		//成功找到，记录商品号
+				}
+				i++;
+			} while (i<MAX);
+			if (i == MAX){
+				cout << "未找到商品" << endl;
+			}
+			cout << "是否继续？（y/n）";
+			cin >> c;
+		} while (c == 'y');
+	}
+};
+class List{
+private:
+	Shop s;
+	UI u;
+	float price[MAX];
+public:
+	float Count(int i){	//计算小计
+		float count;
+		count = s.good[i].number*s.good[i].price;		//将数量与单价相乘
+		return count;
+	}
+	float CountAll(){	//计算总价
+		float count = 0;
+		for (int n = 0; n < u.Num; n++){
+			count = count + price[n + 1];		//将每个小计相加
+		}
+		return count;
+	}
+	void print(){		//打印账单
+		for (int n = 0; n < u.Num; n++){
+			int i = 0;
+			do{
+				if (u.CodeList[n + 1] == s.good[i].code){
+					cout << "名称：" << s.good[i].name;
+					cout << "数量：" << s.good[i].number << s.good[i].unit;
+					cout << "单价：" << s.good[i].price;
+					cout << "小计：" << Count(i) << endl;
+					price[i] = Count(i);
+				}
+				i++;
+			} while (i < MAX);
+		}
+		cout << "总计：" << CountAll() << endl;
+	}
+};
+void main()
+{
+	Shop a;
+}
