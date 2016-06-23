@@ -1,0 +1,31 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+using namespace std;
+#define MAX 100
+class OutFile
+{
+public:
+	OutFile(Shop a)
+	{
+		ofstream b("商店.txt", ios::out);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b << a.GoodNumber<<endl;
+		for (int c = 0; c < a.GoodNumber; c++)
+		{
+			b << a.good[c].benefit << endl;
+			b << a.good[c].code<<endl;
+			b << a.good[c].name << endl;
+			b << a.good[c].discount << endl;
+			b << a.good[c].price << endl;
+			b << a.good[c].unit << endl;
+		}
+	}
+};
+
+
