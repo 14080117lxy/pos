@@ -1,0 +1,363 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+#include<time.h>
+using namespace std;
+#define MAX 100
+
+//商品类
+//
+class Good
+{
+	friend class OutFile;
+	friend class UI2;
+	friend class Shop;
+	friend class List;
+	friend class UI;
+protected:
+	int code;                                      //商品编号
+	float price;                                    //商品单价
+	float discount = 1;                                //商品折扣
+	string name;                                     //商品名称
+	string unit;                                        //商品单位
+	int number;									//商品数量
+	bool benefit;									//是否二赠一
+public:
+	Good(float price, string name, string unit, int code, int number)                            //商品初始化，需要参数：商品折扣，名称，价格，编号
+	{
+		this->price = price;
+		this->name = name;
+		this->unit = unit;
+		this->code = code;
+		this->number = number;
+	}
+	Good()
+	{
+		float price = 0;
+		this->name = '0';
+		this->unit = '0';
+		this->code = 0;
+		number = 0;
+		benefit = false;
+	}
+	void Changediscount(float discount)                                  //更改商品折扣，需要参数：折扣
+	{
+		this->discount = discount;
+	}
+};
+
+//商店类
+//
+class Shop
+{
+	friend class OutFile;
+	friend class UI2;
+	friend class List;
+	friend class UI;
+protected:
+	Good good[MAX];                           //定义商店内的商品.
+	int GoodNumber;
+public:
+	Shop()
+	{
+		ifstream b("商店.txt", ios::in);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b >> GoodNumber;
+		for (int i = 0; i < GoodNumber; i++)
+		{
+			b >> good[i].benefit;
+			b >> good[i].code;
+			b >> good[i].name;
+			b >> good[i].discount;
+			b >> good[i].price;
+			b >> good[i].unit;
+		}
+	}
+	void Changenumber(int i, int num)
+	{
+		good[i].number = num;
+	}
+};
+//用户界面类
+//功能：用户界面，购买界面
+class UI {
+	friend class List;
+private:
+	int CodeList[MAX];
+	int Num;		//记录总的商品数
+public:
+	UI(int Num, int CodeList[MAX]) {
+		this->Num = Num;
+		this->CodeList[MAX] = CodeList[MAX];
+	}
+	UI() {
+		Num = 0;
+		CodeList[MAX] = { 0 };
+	}
+	void Menu() {
+		cout << "1、购买" << endl;
+		cout << "2、账单" << endl;
+		cout << "0、退出" << endl;
+		cout << "请选择：";
+	}
+	void display(Shop a)
+	{
+		cout << "编号   名称    单位    单价   折扣" << endl;
+		for (int i = 0; i < a.GoodNumber; i++)
+		{
+			cout << "  " << a.good[i].code;
+			cout << "    " << a.good[i].name;
+			cout << "     " << a.good[i].unit;
+			cout << "     " << a.good[i].price;
+			cout << "      " << a.good[i].discount << endl;
+		}
+	}
+	void Purchase(Shop* s) {
+		int code = 0;
+		int number = 0;	//购买单个商品的数量
+		char c;
+		display(*s);
+		do {
+			cout << "请输入商品号：";
+			cin >> code;
+			cout << "请输入购买数量：";
+			cin >> number;
+			int i = 0;
+			do {
+				if (code == s->good[i].code) {
+					for (int j = 1; j <= Num; j++) {	//检查是否已经录入过该商品
+						if (code == CodeList[j]) {
+							number = number + s->good[i].number;
+							Num--;
+							break;
+						}
+					}
+					if (number > 1) {		//判断是否满足二赠一
+						if (s->good[i].benefit == true) {
+							number++;		//符合条件，再加一个
+						}
+					}
+					s->Changenumber(i, number);		//更改商品的数量
+					Num++;					//增加商品种类数量	
+					CodeList[Num] = code;		//成功找到，记录商品号
+					break;
+				}
+				i++;
+			} while (i<MAX);
+			if (i == MAX) {
+				cout << "未找到商品" << endl;
+			}
+			cout << "是否继续？（y/n）";
+			cin >> c;
+		} while (c == 'y');
+	}
+};
+
+//账单类
+//功能：计算总额；打印账单
+class List {
+private:
+	float price[MAX];
+	float waste[MAX];
+public:
+	List() {
+		price[MAX] = { 0 };
+	}
+	float Count(int n, float p, float d) {	//计算小计
+		float count = 0;
+		count = n*p*d;		//将数量与单价相乘,并与折扣相乘
+		return count;
+	}
+	float CountAll(int Num) {	//计算总价
+		float count = 0;
+		for (int n = 0; n < Num; n++) {
+			count = count + price[n];		//将每个小计相加
+		}
+		return count;
+	}
+	float Waste(int n, float p, float d) {	//带折扣的节省计算
+		float waste = 0;
+		waste = n*p*(1 - d);
+		return waste;
+	}
+	float Waste1(float p) {
+		float waste = 0;
+		waste = p;
+		return waste;
+	}
+	float WasteAll(int Num) {		//节省汇总
+		float count = 0;
+		for (int n = 0; n < Num; n++) {
+			count = count + waste[n];
+		}
+		return count;
+	}
+	void print(Shop s, UI u) {		//打印账单
+		int number = 0;
+		cout << "***商品购物清单***" << endl;
+		time_t t;
+		time(&t);
+		cout << "Today's date and time:" << endl << ctime(&t) << endl;
+		for (int n = 0; n < u.Num; n++) {
+			int i = 0;
+			do {
+				if (u.CodeList[n + 1] == s.good[i].code) {
+					cout << "名称：" << s.good[i].name << "，";
+					cout << "数量：" << s.good[i].number << s.good[i].unit << "，";
+					cout << "单价：" << s.good[i].price << "（元）"<<"，";
+					if (s.good[i].number>2 && s.good[i].benefit == true) {		//根据不同的优惠方式进行计算
+						number = s.good[i].number - 1;
+						waste[n] = Waste1(s.good[i].price);
+						cout << "其中包含赠送您一瓶" << s.good[i].name << "，";
+					}
+					else {
+						waste[n] = Waste(s.good[i].number, s.good[i].price, s.good[i].discount);
+						number = s.good[i].number;
+					}
+					cout << "小计：" << Count(number, s.good[i].price, s.good[i].discount) << "（元）" << endl;
+					cout << "------------------" << endl;
+					price[n] = Count(number, s.good[i].price, s.good[i].discount);
+				}
+				i++;
+			} while (i < MAX);
+		}
+		cout << "总计:" << CountAll(u.Num) << "（元）" << endl;
+		cout << "节省:" << WasteAll(u.Num) << "（元）" << endl;
+	}
+};
+
+//操作管理界面类
+//
+class UI2
+{
+public:
+	void Menu(Shop *a)
+	{
+		int b = 0;
+		do {
+			system("cls");
+			cout << "进入管理员界面。" << endl << endl;
+			cout << "1、更改折扣" << endl;
+			cout << "2、更改优惠" << endl;
+			cout << "0、退出" << endl;
+			cout << "请选择：";
+			cin >> b;
+			if (b == 1) {
+				Changediscount(a);
+			}
+			if (b == 2) {
+				ChangeSave(a);
+			}
+		} while (b != 0);
+	}
+	void Changediscount(Shop* a)                                  //更改商品折扣，需要参数：折扣
+	{
+		int cod = 0;
+		float discount = 0;                                  //商品编号，修改折扣
+		char d = '0';
+		do {
+			system("cls");
+			display(*a);
+			cout << "输入商品编号" << endl;
+			cin >> cod;
+			cout << "以及更改的折扣进行修改" << endl;
+			cin >> discount;
+			if (cod > a->GoodNumber || cod <= 0 || discount > 1)
+			{
+				cout << "更改失败，是否继续修改（Y or N）" << endl;
+				cin >> d;
+			}
+			else
+			{
+				a->good[cod - 1].Changediscount(discount);
+				cout << "更改成功，是否继续修改(Y or N)" << endl;
+				cin >> d;
+			}
+		} while (d != 'n'&&d != 'N');
+	}
+	void ChangeSave(Shop *s)		//买二赠一
+	{
+		int code = 0;
+		char d = '0';
+		do {
+			system("cls");
+			display(*s);
+			cout << "输入商品编号" << endl;
+			cin >> code;
+			if (code >= s->GoodNumber)
+			{
+				cout << "更改失败，是否继续修改（Y or N）" << endl;
+				cin >> d;
+			}
+			else
+			{
+				s->good[code - 1].discount = 1;
+				s->good[code - 1].benefit = true;
+				cout << "更改成功，是否继续修改(Y or N)" << endl;
+				cin >> d;
+			}
+		} while (d != 'n'&&d != 'N');
+	}
+	void display(Shop a)
+	{
+		cout << "编号   名称    单位    单价   折扣" << endl;
+		for (int i = 0; i < a.GoodNumber; i++)
+		{
+			cout << "  " << a.good[i].code;
+			cout << "    " << a.good[i].name;
+			cout << "     " << a.good[i].unit;
+			cout << "     " << a.good[i].price;
+			cout << "      " << a.good[i].discount << endl;
+		}
+	}
+};
+class OutFile
+{
+public:
+	OutFile(Shop a)
+	{
+		ofstream b("商店.txt", ios::out);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b << a.GoodNumber << endl;
+		for (int c = 0; c < a.GoodNumber; c++)
+		{
+			b << a.good[c].benefit << endl;
+			b << a.good[c].code << endl;
+			b << a.good[c].name << endl;
+			b << a.good[c].discount << endl;
+			b << a.good[c].price << endl;
+			b << a.good[c].unit << endl;
+		}
+	}
+};
+void main() {
+	Shop a;
+	UI u;
+	List l;
+	UI2 c;
+	c.Menu(&a);
+	int b = 0;
+	do {
+		u.Menu();
+		cin >> b;
+		if (b == 1) {
+			u.Purchase(&a);
+		}
+		if (b == 2) {
+			l.print(a, u);
+		}
+	} while (b != 0);
+
+	OutFile w(a);
+}
+
