@@ -39,7 +39,7 @@ public:
 			cout << "增加积分" << addpart << ", 当前积分为" << Integral<<endl;
 
 		}
-		if (Integral <= 200)
+		if (Integral >=500)
 		{
 			addpart = 5*(int)count / 5;
 			Integral = Integral + addpart;
