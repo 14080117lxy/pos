@@ -1,0 +1,23 @@
+	void ChangeSave(Shop *s)		//买二赠一
+	{
+		int code = 0;
+		char d = '0';
+		do {
+			system("cls");
+			display(*s);
+			cout << "输入商品编号" << endl;
+			cin >> code;
+			if (code >= s->GoodNumber)
+			{
+				cout << "更改失败，是否继续修改（Y or N）" << endl;
+				cin >> d;
+			}
+			else
+			{
+				s->good[code - 1].discount = 1;
+				s->good[code - 1].benefit = true;
+				cout << "更改成功，是否继续修改(Y or N)" << endl;
+				cin >> d;
+			}
+		} while (d != 'n'&&d != 'N');
+	}
