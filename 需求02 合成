@@ -15,7 +15,7 @@ class Good
 	friend class UI;
 protected:
 	int code;                                      //商品编号
-	int price;                                    //商品单价
+	float price;                                    //商品单价
 	float discount = 1;                                //商品折扣
 	string name;                                     //商品名称
 	string unit;                                        //商品单位
