@@ -1,0 +1,51 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+#include<time.h>
+
+using namespace std;
+#define MAX 100
+
+class CustomerIn                                              //存储客户信息
+{
+	friend class OutFile;
+	friend class Shop;
+protected:
+	bool Vip;                                                           //Vip 身份
+	int Integral;                                                    //积分
+	string Username;                                                   //姓名
+	int Code;
+public:
+	CustomerIn()
+	{
+		//增加客户信息需求未完成
+	};
+	void AddIntegral(float count)                                 //增加积分
+	{
+		int addpart;
+		if (Integral <= 200)
+		{
+			addpart = (int)count / 5;
+			Integral = Integral + addpart;
+			cout << "增加积分" << addpart << ", 当前积分为"<< Integral<<endl;
+			
+		}
+		if (Integral >= 200&&Integral<=500)
+		{
+			addpart = 3*(int)count / 5;
+			Integral = Integral + addpart;
+			cout << "增加积分" << addpart << ", 当前积分为" << Integral<<endl;
+
+		}
+		if (Integral <= 200)
+		{
+			addpart = 5*(int)count / 5;
+			Integral = Integral + addpart;
+			cout << "增加积分" << addpart << ", 当前积分为" << Integral<<endl;
+
+		}
+		
+	}
+};
