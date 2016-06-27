@@ -1,0 +1,115 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<math.h>
+#include<time.h>
+
+using namespace std;
+#define MAX 100
+
+class CustomerIn                                              //存储客户信息
+{
+	friend class OutFile;
+	friend class Shop;
+protected:
+	bool Vip;                                                           //Vip 身份
+	int Integral;                                                    //积分
+	string Username;                                                   //姓名
+public:
+	CustomerIn()
+	{
+		                                                          //增加客户信息需求未完成
+	};
+};
+//商店类
+//
+class Shop
+{
+	
+	friend class OutFile;
+	friend class UI2;
+	friend class List;
+	friend class UI;
+protected:
+	Good good[MAX];                           //定义商店内的商品.
+	int GoodNumber;
+	CustomerIn Customer[MAX];
+	int CustomerNumber;
+public:
+	Shop()
+	{
+		ifstream b("商店.txt", ios::in);
+		if (!b)
+		{
+			cout << "cannot open input 商店 file.\n";
+			exit(0);
+		}
+		b >> GoodNumber;
+		for (int i = 0; i < GoodNumber; i++)
+		{
+			b >> good[i].benefit;
+			b >> good[i].code;
+			b >> good[i].name;
+			b >> good[i].discount;
+			b >> good[i].price;
+			b >> good[i].unit;
+		}
+		b.close();
+		ifstream c("客户.txt", ios::in);
+		if (!c)
+		{
+			cout << "cannot open input 客户 file.\n";
+			exit(0);
+		}
+		c >> CustomerNumber;
+		for (int i = 0; i < CustomerNumber; i++)
+		{
+			c >> Customer[i].Username;
+			c >> Customer[i].Integral;
+			c >> Customer[i].Vip;
+		}
+		c.close();
+	}
+	void Changenumber(int i, int num)
+	{
+		good[i].number = num;
+	}
+};
+class OutFile
+{
+public:
+	OutFile(Shop a)
+	{
+		ofstream b("商店.txt", ios::out);
+		if (!b)
+		{
+			cout << "cannot open input file.\n";
+			exit(0);
+		}
+		b << a.GoodNumber << endl;
+		for (int c = 0; c < a.GoodNumber; c++)
+		{
+			b << a.good[c].benefit << endl;
+			b << a.good[c].code << endl;
+			b << a.good[c].name << endl;
+			b << a.good[c].discount << endl;
+			b << a.good[c].price << endl;
+			b << a.good[c].unit << endl;
+		}
+		b.close();
+		ofstream c("客户.txt", ios::out);
+		if (!c)
+		{
+			cout << "cannot open input 客户 file.\n";
+			exit(0);
+		}
+		c << a.GoodNumber << endl;
+		for (int p = 0; p < a.CustomerNumber;p++)
+		{
+			c << a.Customer[p].Username << endl;
+			c << a.Customer[p].Integral << endl;
+			c << a.Customer[p].Vip << endl;
+			
+		}
+	}
