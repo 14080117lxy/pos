@@ -109,7 +109,7 @@ public:
 		c << a.GoodNumber << endl;
 		for (int p = 0; p < a.CustomerNumber;p++)
 		{
-		        c >> a.Customer[p].Code<<endl;
+		        c << a.Customer[p].Code<<endl;
 			c << a.Customer[p].Username << endl;
 			c << a.Customer[p].Integral << endl;
 			c << a.Customer[p].Vip << endl;
