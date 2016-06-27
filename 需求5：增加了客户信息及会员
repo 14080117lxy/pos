@@ -16,6 +16,7 @@ protected:
 	bool Vip;                                                           //Vip 身份
 	int Integral;                                                    //积分
 	string Username;                                                   //姓名
+	int Code;
 public:
 	CustomerIn()
 	{
@@ -65,6 +66,7 @@ public:
 		c >> CustomerNumber;
 		for (int i = 0; i < CustomerNumber; i++)
 		{
+		        c >> Customer[i].Code;
 			c >> Customer[i].Username;
 			c >> Customer[i].Integral;
 			c >> Customer[i].Vip;
@@ -107,6 +109,7 @@ public:
 		c << a.GoodNumber << endl;
 		for (int p = 0; p < a.CustomerNumber;p++)
 		{
+		        c >> a.Customer[p].Code<<endl;
 			c << a.Customer[p].Username << endl;
 			c << a.Customer[p].Integral << endl;
 			c << a.Customer[p].Vip << endl;
