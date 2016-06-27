@@ -1,0 +1,46 @@
+	void print(Shop s, UI u) {		//打印账单
+		int number = 0;
+		cout << "***商品购物清单***" << endl;
+		time_t t;
+		time(&t);
+		cout << "Today's date and time:" << endl << ctime(&t) << endl;
+		for (int n = 0; n < u.Num; n++) {
+			int i = 0;
+			do {
+				if (u.CodeList[n + 1] == s.good[i].code) {
+
+					cout << "名称：" << s.good[i].name << "，";
+					cout << "数量：" << s.good[i].number << s.good[i].unit << "，";
+					cout << "单价：" << s.good[i].price << "（元）" << "，";
+					if (s.good[i].number>2 && s.good[i].benefit == true) {		//根据不同的优惠方式进行计算
+						number = s.good[i].number - 1;
+						waste[n] = Waste1(s.good[i].price);
+						cout << "其中包含赠送您一瓶" << s.good[i].name << "，";
+						cout << "小计：" << Count(number, s.good[i].price, s.good[i].discount) << "（元）" << endl;
+						price[n] = Count(number, s.good[i].price, s.good[i].discount);
+					}
+					else {
+						number = s.good[i].number;
+						for (int p = 0; p < s.CustomerNumber; p++) {
+							if (u.usercode == s.Customer[p].Code) {		//寻找相应的客户
+								if (s.Customer[p].Vip == true) {		//判断该客户是不是vip客户
+									waste[n] = Waste2(s.good[i].number, s.good[i].price, s.good[i].discount,s.good[i].Specials);
+									cout << "小计：" << Count1(number, s.good[i].price, s.good[i].discount, s.good[i].Specials) << "（元）" << endl;
+									price[n] = Count1(number, s.good[i].price, s.good[i].discount, s.good[i].Specials);
+								}
+								else {
+									waste[n] = Waste(s.good[i].number, s.good[i].price, s.good[i].discount);
+									cout << "小计：" << Count(number, s.good[i].price, s.good[i].discount) << "（元）" << endl;
+									price[n] = Count(number, s.good[i].price, s.good[i].discount);
+								}
+							}
+						}
+					}
+					cout << "------------------" << endl;
+				}
+				i++;
+			} while (i < MAX);
+		}
+		cout << "总计:" << CountAll(u.Num) << "（元）" << endl;
+		cout << "节省:" << WasteAll(u.Num) << "（元）" << endl;
+	}
