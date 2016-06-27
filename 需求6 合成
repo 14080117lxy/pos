@@ -286,10 +286,10 @@ public:
 		int number = 0;
 		int user = 0;
 		cout << "***商品购物清单***" << endl;
-		cout << "会员编号：" << u.usercode << endl;
 		time_t t;
 		time(&t);
-		cout << "Today's date and time:" << endl << ctime(&t) << endl;
+		cout << "打印时间:" << ctime(&t) << endl;
+		cout << "*****************" << endl;
 		for (int n = 0; n < u.Num; n++) {
 			int i = 0;
 			do {
@@ -330,7 +330,11 @@ public:
 		}
 		cout << "总计:" << CountAll(u.Num) << "（元）" << endl;
 		cout << "节省:" << WasteAll(u.Num) << "（元）" << endl;
-		s.Customer[user].AddIntegral(CountAll(u.Num));
+		if (s.Customer[user].Vip == true) {
+			cout << "*****************" << endl;
+			cout << "会员编号：" << u.usercode << endl;
+			s.Customer[user].AddIntegral(CountAll(u.Num));
+		}
 	}
 };
 
