@@ -57,6 +57,7 @@ public:
 //
 class CustomerIn                                              //存储客户信息
 {
+	friend class UI2;
 	friend class OutFile;
 	friend class Shop;
 	friend class List;
@@ -153,17 +154,18 @@ public:
 	}
 	void display(Shop a)
 	{
-		cout << "编号   名称    单位    单价   折扣    会员折扣" << endl;
+		cout << "编号   名称    单位    单价   折扣    会员折扣    二赠一优惠" << endl;
 		for (int i = 0; i < a.GoodNumber; i++)
- 		{
- 			cout << "  " << a.good[i].code;
- 			cout << "    " << a.good[i].name;
- 			cout << "     " << a.good[i].unit;
- 			cout << "     " << a.good[i].price;
+		{
+			cout << "  " << a.good[i].code;
+			cout << "    " << a.good[i].name;
+			cout << "     " << a.good[i].unit;
+			cout << "     " << a.good[i].price;
 			cout << "      " << a.good[i].discount;
-			cout << "        " << a.good[i].Specials << endl;
- 		}
- 	}
+			cout << "          " << a.good[i].Specials;
+			cout<<"    "<<a.good[i].benefit<< endl;
+		}
+	}
 	void Purchase(Shop* s) {
 		int code = 0;
 		int number = 0;	//购买单个商品的数量
@@ -246,7 +248,7 @@ public:
 	}
 	float Waste2(int n, float p, float d, float v) {	//计算带vip折扣的节省计算
 		float waste = 0;
-		waste = n*p-n*p*d*v;
+		waste = n*p - n*p*d*v;
 		return waste;
 	}
 	float WasteAll(int Num) {		//节省汇总
@@ -282,7 +284,7 @@ public:
 						for (int p = 0; p < s.CustomerNumber; p++) {
 							if (u.usercode == s.Customer[p].Code) {		//寻找相应的客户
 								if (s.Customer[p].Vip == true) {		//判断该客户是不是vip客户
-									waste[n] = Waste2(s.good[i].number, s.good[i].price, s.good[i].discount,s.good[i].Specials);
+									waste[n] = Waste2(s.good[i].number, s.good[i].price, s.good[i].discount, s.good[i].Specials);
 									cout << "小计：" << Count1(number, s.good[i].price, s.good[i].discount, s.good[i].Specials) << "（元）" << endl;
 									price[n] = Count1(number, s.good[i].price, s.good[i].discount, s.good[i].Specials);
 								}
@@ -317,6 +319,7 @@ public:
 			cout << "进入管理员界面。" << endl << endl;
 			cout << "1、更改折扣" << endl;
 			cout << "2、更改优惠" << endl;
+			cout << "3.查看客户信息" << endl;
 			cout << "0、退出" << endl;
 			cout << "请选择：";
 			cin >> b;
@@ -326,12 +329,30 @@ public:
 			if (b == 2) {
 				ChangeSave(a);
 			}
-			if (b != 1 && b != 2 && b != 0)
+			if (b == 3){
+				ShowCustomer(a);
+			}
+			if (b != 1 && b != 2 && b != 3 && b != 0)
 			{
 				cout << "wrong number,please putin again!" << endl;
 				system("pause");
 			}
 		} while (b != 0);
+	}
+	void ShowCustomer(Shop *a)
+	{
+		int count = a->CustomerNumber;
+		system("cls");
+		cout << "编号   名称    VIP    积分 " << endl;
+		for (int i = 0; i < count; i++)
+		{
+			cout << "  " << a->Customer[i].Code;
+			cout << "    " << a->Customer[i].Username;
+			cout << "    " << a->Customer[i].Vip;
+			cout << "    " << a->Customer[i].Integral << endl;
+
+		}
+		system("pause");
 	}
 	void Changediscount(Shop* a)                                  //更改商品折扣，需要参数：折扣
 	{
@@ -383,7 +404,7 @@ public:
 	}
 	void display(Shop a)
 	{
-		cout << "编号   名称    单位    单价   折扣     会员折扣" << endl;
+		cout << "编号   名称    单位    单价   折扣     会员打折    优惠二赠一" << endl;
 		for (int i = 0; i < a.GoodNumber; i++)
 		{
 			cout << "  " << a.good[i].code;
@@ -391,10 +412,13 @@ public:
 			cout << "     " << a.good[i].unit;
 			cout << "     " << a.good[i].price;
 			cout << "      " << a.good[i].discount;
-			cout << "       " << a.good[i].Specials << endl;
+			cout << "         " << a.good[i].Specials;
+			cout << "          " << a.good[i].benefit << endl;
 		}
 	}
 };
+
+
 
 //写入文件类
 //
@@ -459,4 +483,3 @@ void main() {
 
 	OutFile w(a);
 }
-
